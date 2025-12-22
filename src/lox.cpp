@@ -10,7 +10,7 @@ namespace Lox{
 
 static bool hadError {false};
 
-void runFile(const std::string filePath){
+void runFile(const std::string& filePath){
     std::cout << "Running file " << filePath << "\n";
 
     std::ifstream f {filePath};
@@ -61,16 +61,16 @@ void runPrompt(){
     }
 }
 
-static void report(int line, std::string where, std::string_view msg){
+static void report(int line, const std::string& where, const std::string& msg){
     std::cerr << "[line " << line << "] Error " << where << ": " << msg << '\n';
     hadError = true;
 }
 
-void error(int line, std::string msg){
+void error(int line, const std::string& msg){
     report(line, "", msg);
 }
 
-void error(Token token, std::string msg) {
+void error(Token token, const std::string& msg) {
     if(token.type() == TokenType::EOF_) {
         report(token.line(), "at end",  msg);
     }

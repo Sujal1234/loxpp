@@ -13,6 +13,6 @@ struct Interpreter : public ExprVisitor {
     virtual ~Interpreter() = default;
 };
 
-Token::Literal getVal(ExprPtr expr);
+Token::Literal getVal(Expr* expr);
 
 #endif // INTERPRETER_H

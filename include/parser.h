@@ -61,8 +61,8 @@ private:
     /**
      * Consumes the token if it matches otherwise throws an error
      */
-    Token consume(TokenType type, std::string msg);
-    ParseError error(Token token, std::string msg);
+    Token consume(TokenType type, const std::string& msg);
+    ParseError error(Token token, const std::string& msg);
     
     void synchronise();    
 };

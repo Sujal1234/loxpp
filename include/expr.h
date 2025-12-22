@@ -88,6 +88,4 @@ struct Unary : public Expr {
     }
 };
 
-bool isTruthy(Token::Literal literal);
-
 #endif //EXPR_H

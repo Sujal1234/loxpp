@@ -160,7 +160,7 @@ void Scanner::readString(){
     //Consume quotation mark - "
     advance();
 
-    std::string_view str = m_source.substr(m_start+1, m_current-m_start-2);
+    auto str = std::string(m_source.substr(m_start+1, m_current-m_start-2));
     addToken(TokenType::STRING, str);
 }
 

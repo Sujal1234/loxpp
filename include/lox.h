@@ -7,10 +7,10 @@
 #include "token.h"
 
 namespace Lox{
-void runFile(const std::string filePath);
+void runFile(const std::string& filePath);
 void runPrompt();
-void error(int line, std::string msg);
-void error(Token token, std::string msg);
+void error(int line, const std::string& msg);
+void error(Token token, const std::string& msg);
 // std::string printTree(ExprPtr expr);
 };
 #endif //LOX_H

@@ -98,7 +98,7 @@ ExprPtr Parser::primary() {
     }
 }
 
-Token Parser::consume(TokenType type, std::string msg) {
+Token Parser::consume(TokenType type, const std::string& msg) {
     if(check(type)){
         return advance();
     }
@@ -106,7 +106,7 @@ Token Parser::consume(TokenType type, std::string msg) {
     throw error(peek(), msg);
 }
 
-Parser::ParseError Parser::error(Token token, std::string msg) {
+Parser::ParseError Parser::error(Token token, const std::string& msg) {
     Lox::error(token, msg);
     return ParseError{};
 }

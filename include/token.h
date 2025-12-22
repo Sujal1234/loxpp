@@ -26,12 +26,13 @@ enum class TokenType{
 
 class Token{
     public:
-        using Literal = std::variant<std::nullptr_t, std::string_view, double, bool>;
+        using Literal = std::variant<std::nullptr_t, std::string, double, bool>;
 
         Token() = default;
         Token(TokenType type, std::string lexeme, Literal literal, int line);
 
         static std::string tokenTypeToString(TokenType type);
+        static bool isTruthy(const Literal& literal);
         std::string printToken() const;
         TokenType type() const;
         Literal literal() const;

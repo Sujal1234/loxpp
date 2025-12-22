@@ -79,15 +79,11 @@ void Interpreter::visitUnary(const Unary* expr){
         }break;
 
         case TokenType::BANG: {
-            m_val = !isTruthy(val);
+            m_val = !Token::isTruthy(val);
         }break;
         default: {
             // TODO: Throw error?
             m_val = nullptr;
         }break;
     }
-}
-
-bool isNull(const Token::Literal& a){
-    return std::holds_alternative<nullptr_t>(a);
 }
