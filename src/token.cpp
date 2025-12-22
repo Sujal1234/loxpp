@@ -1,6 +1,7 @@
 #include "token.h"
 #include <string>
 #include <sstream>
+#include <iostream>
 
 // Token::Token(const TokenType type, const std::string_view lexeme, const int line)
 //     : m_type{type}
@@ -87,4 +88,18 @@ bool Token::isTruthy(const Literal& literal){
     else{
         return true;
     }
+}
+
+void printLiteral(const Token::Literal& val){
+    if(std::holds_alternative<std::nullptr_t>(val)){
+        std::cout << "NIL";
+        return;
+    }
+    if(std::holds_alternative<bool>(val)){
+        std::cout << std::boolalpha << std::get<bool>(val);
+        return;
+    }
+    std::visit([](const auto& x){
+        std::cout << x;
+    }, val);
 }

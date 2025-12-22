@@ -46,4 +46,6 @@ class Token{
         int m_line {};
 }; //class Token
 
+void printLiteral(const Token::Literal& literal);
+
 #endif //TOKEN_H

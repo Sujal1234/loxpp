@@ -10,7 +10,7 @@
 int main(int argc, char** argv){
     if(argc > 2){
         std::cerr << "Usage: " << argv[0] << " [script]\n";
-        exit(EXIT_FAILURE);
+        exit(64);
     }
     else if(argc == 2){
         Lox::runFile(argv[1]);

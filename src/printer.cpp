@@ -21,16 +21,7 @@ void ASTPrinter::visitGrouping(const Grouping* expr) {
 void ASTPrinter::visitLiteral(const Literal* expr) {
     Token::Literal val = expr->m_value;
 
-    if(std::holds_alternative<std::nullptr_t>(val)){
-        return;
-    }
-    if(std::holds_alternative<bool>(val)){
-        std::cout << std::boolalpha << std::get<bool>(val);
-        return;
-    }
-    std::visit([](const auto& x){
-        std::cout << x;
-    }, val);
+    printLiteral(val);
 }
 
 void ASTPrinter::visitUnary(const Unary* expr) {

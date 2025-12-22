@@ -10,9 +10,17 @@ struct Interpreter : public ExprVisitor {
     virtual void visitLiteral(const Literal* expr) override;
     virtual void visitUnary(const Unary* expr) override;
 
+    void interpret(Expr& expr);
+
     virtual ~Interpreter() = default;
 };
 
-Token::Literal getVal(Expr* expr);
+struct LoxTypeError{
+    Token token;
+    std::string msg;
+    LoxTypeError(Token tok, std::string message): token{tok}, msg{message}{};
+};
+
+Token::Literal getVal(Interpreter& itpr, Expr& expr);
 
 #endif // INTERPRETER_H

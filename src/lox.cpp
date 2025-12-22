@@ -5,10 +5,32 @@
 #include "scanner.h"
 #include "parser.h"
 #include "printer.h"
+#include "interpreter.h"
 
 namespace Lox{
 
 static bool hadError {false};
+static bool hadRuntimeError {false};
+static Interpreter interpreter{};
+
+static void run(const std::string& source){
+    Scanner scanner{source};
+    std::vector<Token> tokens = scanner.scanTokens();
+
+    Parser parser{tokens};
+    ExprPtr expr = parser.parse();
+
+    if(hadError){
+        std::cerr << "Parser encountered an error\n";
+        return;
+    }
+    // // print the AST
+    // ASTPrinter printer;
+    // expr->accept(printer);
+    // std::cout << '\n';
+
+    interpreter.interpret(*expr);
+}
 
 void runFile(const std::string& filePath){
     std::cout << "Running file " << filePath << "\n";
@@ -21,30 +43,10 @@ void runFile(const std::string& filePath){
         src += line;
     }
 
-    Scanner scanner{src};
-    std::vector<Token> tokens = scanner.scanTokens();
+    run(src);
 
-    // for(auto& tok : tokens){
-    //     std::cout << tok.lexeme() << " ";
-    // }
-    // std::cout << "\n";
-
-    Parser parser{tokens};
-    ExprPtr expr = parser.parse();
-
-    if(hadError){
-        std::cerr << "Parser encountered an error\n";
-        return;
-    }
-
-    // print the AST
-    ASTPrinter printer;
-    expr->accept(printer);
-    std::cout << '\n';
-
-    if(hadError){
-        exit(EXIT_FAILURE);
-    }
+    if(hadError) exit(65);
+    if(hadRuntimeError) exit(70);
 }
 
 void runPrompt(){
@@ -57,6 +59,7 @@ void runPrompt(){
             std::cout << std::endl;
             return;
         }
+        run(inp);
         hadError = false;
     }
 }
@@ -77,5 +80,11 @@ void error(Token token, const std::string& msg) {
     else {
         report(token.line(), "at '" + token.lexeme() + "'", msg);
     }
+}
+
+void runtimeError(LoxTypeError& error){
+    std::cerr << "Error at operand " << error.token.printToken() << ": ";
+    std::cerr << error.msg << "\n[line " << error.token.line() << "]\n";
+    hadRuntimeError = true;
 }
 };
