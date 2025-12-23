@@ -61,7 +61,7 @@ std::string Token::tokenTypeToString(TokenType type) {
     }
 }
 
-std::string Token::printToken() const{
+std::string Token::stringifyToken() const{
     std::stringstream buf {};
     buf << tokenTypeToString(m_type) << " " << m_lexeme << " ";
     std::visit([&buf](const auto& ele) {buf << ele;}, m_literal);

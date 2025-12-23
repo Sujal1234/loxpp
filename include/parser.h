@@ -5,6 +5,7 @@
 
 #include "token.h"
 #include "expr.h"
+#include "stmt.h"
 
 class Parser {
 private:
@@ -16,7 +17,7 @@ public:
     : m_tokens {tokens}
     {}
 
-    ExprPtr parse();
+    std::vector<StmtPtr> parse();
 
 private:
     class ParseError {};
@@ -32,11 +33,15 @@ private:
     ExprPtr factor();
     ExprPtr unary();
     ExprPtr primary();
+    StmtPtr statement();
+    PrintStmtPtr printStatement();
+    ExprStmtPtr exprStatement();
     
     /**
      * Returns true if at least one of the types matches.
      */
     bool match(std::vector<TokenType> types);
+    bool match(TokenType type);
     /**
      * If we are at the end then returns previous token.
      * Otherwise returns the current token and then consumes it.

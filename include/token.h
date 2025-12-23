@@ -33,7 +33,7 @@ class Token{
 
         static std::string tokenTypeToString(TokenType type);
         static bool isTruthy(const Literal& literal);
-        std::string printToken() const;
+        std::string stringifyToken() const;
         TokenType type() const;
         Literal literal() const;
         std::string lexeme() const;

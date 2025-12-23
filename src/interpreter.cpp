@@ -1,26 +1,28 @@
 #include <iostream>
 #include "interpreter.h"
 #include "lox.h"
+#include "stmt.h"
+#include "token.h"
 
-Token::Literal getVal(Interpreter& itpr, Expr& expr){
-    expr.accept(itpr);
-    return itpr.m_val;
+Token::Literal Interpreter::getVal(const Expr& expr){
+    expr.accept(*this);
+    return m_val;
 }
 
 static void checkNumber(const Token::Literal& literal, const Token& operand){
     if(!std::holds_alternative<double>(literal)){
-        throw LoxTypeError(operand, "Operand must be a number.");
+        throw LoxRuntimeError(operand, "Operand must be a number.");
     }
 }
 static void checkNumbers(const Token::Literal& left, const Token::Literal& right, const Token& operand){
     if(!std::holds_alternative<double>(left) || !std::holds_alternative<double>(right)){
-        throw LoxTypeError(operand, "Operands must be numbers.");
+        throw LoxRuntimeError(operand, "Operands must be numbers.");
     }
 }
 
 void Interpreter::visitBinary(const Binary* expr){
-    auto lval = getVal(*this, *(expr->m_left));
-    auto rval = getVal(*this, *(expr->m_right));
+    auto lval = getVal(*(expr->m_left));
+    auto rval = getVal(*(expr->m_right));
 
     switch (expr->m_op.type())
     {
@@ -33,7 +35,7 @@ void Interpreter::visitBinary(const Binary* expr){
         }
         else{
             m_val = nullptr;
-            throw LoxTypeError(expr->m_op, "Operands are not of the correct type.");
+            throw LoxRuntimeError(expr->m_op, "Operands are not of the correct type.");
         }
     }break;
 
@@ -82,14 +84,14 @@ void Interpreter::visitBinary(const Binary* expr){
 }
 
 void Interpreter::visitGrouping(const Grouping* expr){
-    m_val = getVal(*this, *(expr->m_expr));
+    m_val = getVal(*(expr->m_expr));
 }
 
 void Interpreter::visitLiteral(const Literal* expr){
     m_val = expr->m_value;
 }
 void Interpreter::visitUnary(const Unary* expr){
-    auto val = getVal(*this, *(expr->m_right));
+    auto val = getVal(*(expr->m_right));
 
     switch(expr->m_op.type()){
         case TokenType::MINUS: {
@@ -106,13 +108,27 @@ void Interpreter::visitUnary(const Unary* expr){
     }
 }
 
-void Interpreter::interpret(Expr& expr){
+void Interpreter::visitExprStmt(const ExprStmt& stmt){
+    getVal(*stmt.m_expr);
+}
+
+void Interpreter::visitPrintStmt(const PrintStmt& stmt){
+    auto val = getVal(*stmt.m_expr);
+    printLiteral(val);
+    std::cout << '\n';
+}
+
+void Interpreter::execute(const Stmt& stmt){
+    stmt.accept(*this);
+}
+
+void Interpreter::interpret(const std::vector<StmtPtr>& statements){
     try{
-        Token::Literal value = getVal(*this, expr);
-        printLiteral(value);
-        std::cout << '\n';
+        for(const StmtPtr& stmt : statements){
+            execute(*stmt);
+        }
     }
-    catch(LoxTypeError err){
+    catch(LoxRuntimeError err){
         Lox::runtimeError(err);
     }
 }

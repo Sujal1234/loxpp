@@ -1,6 +1,7 @@
 #include "parser.h"
 #include "expr.h"
 #include "lox.h"
+#include "stmt.h"
 
 ExprPtr Parser::expression() {
     return equality();
@@ -88,7 +89,7 @@ ExprPtr Parser::primary() {
         return std::make_unique<Literal>(lit);
     }
 
-    if(match({TokenType::LEFT_PAREN})) {
+    if(match(TokenType::LEFT_PAREN)) {
         auto expr = expression();
         consume(TokenType::RIGHT_PAREN, "Expected ')' after expression.");
         return std::make_unique<Grouping>(std::move(expr));
@@ -111,13 +112,18 @@ Parser::ParseError Parser::error(Token token, const std::string& msg) {
     return ParseError{};
 }
 
+bool Parser::match(TokenType type){
+    if(check(type)){
+        advance();
+        return true;
+    }
+    return false;
+}
+
+// Advance if any of the types matches
 bool Parser::match(std::vector<TokenType> types) {
     for(auto type : types){
-        if(check(type)){
-            // If one type matches then consume the token and return true
-            advance();
-            return true;
-        }
+        if(match(type)) return true;
     }
     return false;
 }
@@ -168,11 +174,27 @@ void Parser::synchronise(){
     }
 }
 
-ExprPtr Parser::parse() {
-    try{
-        return expression();
+std::vector<StmtPtr> Parser::parse() {
+    std::vector<StmtPtr> statements;
+    while(!isAtEnd()){
+        statements.push_back(statement());
     }
-    catch (ParseError error){
-        return nullptr;
-    }
+    return statements;
+}
+
+StmtPtr Parser::statement(){
+    if(match(TokenType::PRINT)) return printStatement();
+    return exprStatement();
+}
+
+PrintStmtPtr Parser::printStatement(){
+    ExprPtr value = expression();
+    consume(TokenType::SEMICOLON, "Expected ';' after value.");
+    return std::make_unique<PrintStmt>(std::move(value));
+}
+
+ExprStmtPtr Parser::exprStatement(){
+    ExprPtr expr = expression();
+    consume(TokenType::SEMICOLON, "Expected ';' after expression.");
+    return std::make_unique<ExprStmt>(std::move(expr));
 }

@@ -18,18 +18,14 @@ static void run(const std::string& source){
     std::vector<Token> tokens = scanner.scanTokens();
 
     Parser parser{tokens};
-    ExprPtr expr = parser.parse();
+    auto statements = parser.parse();
 
     if(hadError){
         std::cerr << "Parser encountered an error\n";
         return;
     }
-    // // print the AST
-    // ASTPrinter printer;
-    // expr->accept(printer);
-    // std::cout << '\n';
-
-    interpreter.interpret(*expr);
+    
+    interpreter.interpret(statements);
 }
 
 void runFile(const std::string& filePath){
@@ -82,8 +78,8 @@ void error(Token token, const std::string& msg) {
     }
 }
 
-void runtimeError(LoxTypeError& error){
-    std::cerr << "Error at operand " << error.token.printToken() << ": ";
+void runtimeError(LoxRuntimeError& error){
+    std::cerr << "Error at operand '" << error.token.lexeme() << "' : ";
     std::cerr << error.msg << "\n[line " << error.token.line() << "]\n";
     hadRuntimeError = true;
 }

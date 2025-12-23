@@ -1,26 +1,31 @@
 #ifndef INTERPRETER_H
 #define INTERPRETER_H
 #include "expr.h"
+#include "stmt.h"
+#include <vector>
 
-struct Interpreter : public ExprVisitor {
+struct Interpreter : public ExprVisitor, public StmtVisitor {
     Token::Literal m_val {nullptr};
 
-    virtual void visitBinary(const Binary* expr) override;
-    virtual void visitGrouping(const Grouping* expr) override;
-    virtual void visitLiteral(const Literal* expr) override;
-    virtual void visitUnary(const Unary* expr) override;
+    void visitBinary(const Binary* expr) override;
+    void visitGrouping(const Grouping* expr) override;
+    void visitLiteral(const Literal* expr) override;
+    void visitUnary(const Unary* expr) override;
 
-    void interpret(Expr& expr);
+    void visitExprStmt(const ExprStmt& stmt) override;
+    void visitPrintStmt(const PrintStmt& stmt) override;
+
+    Token::Literal getVal(const Expr& expr);
+    void execute(const Stmt& stmt);
+    void interpret(const std::vector<StmtPtr>& statements);
 
     virtual ~Interpreter() = default;
 };
 
-struct LoxTypeError{
+struct LoxRuntimeError{
     Token token;
     std::string msg;
-    LoxTypeError(Token tok, std::string message): token{tok}, msg{message}{};
+    LoxRuntimeError(Token tok, std::string message): token{tok}, msg{message}{};
 };
-
-Token::Literal getVal(Interpreter& itpr, Expr& expr);
 
 #endif // INTERPRETER_H
