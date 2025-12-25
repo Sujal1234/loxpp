@@ -31,12 +31,11 @@ Scanner::Scanner(std::string_view source)
 std::vector<Token> Scanner::scanTokens(){
     while(!isAtEnd()){
         //At the beginning of the next lexeme
-        m_start = m_current;
         scanToken();
     }
 
     //Add an EOF_ token after all the tokens
-    m_tokens.push_back(Token(TokenType::EOF_, "", nullptr, m_line));
+    m_tokens.emplace_back(TokenType::EOF_, "", nullptr, m_line);
     return m_tokens;
 }
 
@@ -129,8 +128,8 @@ char Scanner::peekNext(){
 //Push a new token to the tokens vector
 void Scanner::addToken(TokenType type, Token::Literal literal){
     std::string_view textSV = m_source.substr(m_start, m_current - m_start);
-    std::string text = std::string{textSV.data(), m_current - m_start};
-    m_tokens.push_back(Token(type, text, literal, m_line));
+    std::string text = std::string{textSV};
+    m_tokens.emplace_back(type, text, literal, m_line);
 }
 
 //Overloading addToken for tokens which are non-literal tokens

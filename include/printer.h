@@ -3,10 +3,11 @@
 
 #include "expr.h"
 struct ASTPrinter : public ExprVisitor {
-    virtual void visitBinary(const Binary* expr) override;
-    virtual void visitGrouping(const Grouping* expr) override;
-    virtual void visitLiteral(const Literal* expr) override;
-    virtual void visitUnary(const Unary* expr) override;
+    void visitBinary(const Binary* expr) override;
+    void visitGrouping(const Grouping* expr) override;
+    void visitLiteral(const Literal* expr) override;
+    void visitUnary(const Unary* expr) override;
+    void visitVariable(const Variable* expr) override;
 
     virtual ~ASTPrinter() = default;
 };

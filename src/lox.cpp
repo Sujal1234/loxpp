@@ -24,7 +24,7 @@ static void run(const std::string& source){
         std::cerr << "Parser encountered an error\n";
         return;
     }
-    
+
     interpreter.interpret(statements);
 }
 
@@ -36,7 +36,7 @@ void runFile(const std::string& filePath){
 
     std::string line;
     while(std::getline(f, line)){
-        src += line;
+        src += line + "\n";
     }
 
     run(src);

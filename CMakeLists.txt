@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 file(GLOB_RECURSE SRC_FILES src/main.cpp src/lox.cpp src/scanner.cpp
-src/token.cpp src/parser.cpp src/printer.cpp src/interpreter.cpp)
+src/token.cpp src/parser.cpp src/printer.cpp src/interpreter.cpp src/state.cpp)
 add_executable(lox ${SRC_FILES})
 
 target_include_directories(lox PUBLIC include)

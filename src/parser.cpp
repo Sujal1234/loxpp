@@ -14,7 +14,7 @@ ExprPtr Parser::equality() {
     while(match({TokenType::BANG_EQUAL, TokenType::EQUAL_EQUAL})) {
         Token op = previous();
         ExprPtr right = comparison();
-        expr = std::make_unique<Binary>(std::move(expr), std::move(right), op);
+        expr = std::make_unique<Binary>(std::move(expr), std::move(right), std::move(op));
     }
     return expr;
 }
@@ -29,7 +29,7 @@ ExprPtr Parser::comparison() {
     {
         Token op = previous();
         ExprPtr right = term();
-        expr = std::make_unique<Binary>(std::move(expr), std::move(right), op);
+        expr = std::make_unique<Binary>(std::move(expr), std::move(right), std::move(op));
     }
     return expr;
 }
@@ -44,7 +44,7 @@ ExprPtr Parser::term() {
     {
         Token op = previous();
         ExprPtr right = factor();
-        expr = std::make_unique<Binary>(std::move(expr), std::move(right), op);
+        expr = std::make_unique<Binary>(std::move(expr), std::move(right), std::move(op));
     }
     return expr;
 }
@@ -59,7 +59,7 @@ ExprPtr Parser::factor() {
     {
         Token op = previous();
         ExprPtr right = unary();
-        expr = std::make_unique<Binary>(std::move(expr), std::move(right), op);
+        expr = std::make_unique<Binary>(std::move(expr), std::move(right), std::move(op));
     }
     return expr;
 }
@@ -72,21 +72,24 @@ ExprPtr Parser::unary() {
     {
         Token op = previous();
         ExprPtr expr = unary();
-        return std::make_unique<Unary>(op, std::move(expr));
+        return std::make_unique<Unary>(std::move(op), std::move(expr));
     }
 
     return primary();
 }
 
 ExprPtr Parser::primary() {
-    // NUMBER | STRING | "true" |  "false" | "nil"  
-    //    | "(" expression ")" ;
+    // NUMBER | STRING | "true" |  "false" | "nil"  | "(" expression ")" | IDENTIFIER;
     if(match({
         TokenType::NUMBER, TokenType::STRING, TokenType::TRUE, TokenType::FALSE, TokenType::NIL
     }))
     {
         Token::Literal lit = previous().literal();
         return std::make_unique<Literal>(lit);
+    }
+
+    if(match(TokenType::IDENTIFIER)){
+        return std::make_unique<Variable>(previous());
     }
 
     if(match(TokenType::LEFT_PAREN)) {
@@ -177,14 +180,37 @@ void Parser::synchronise(){
 std::vector<StmtPtr> Parser::parse() {
     std::vector<StmtPtr> statements;
     while(!isAtEnd()){
-        statements.push_back(statement());
+        statements.push_back(declaration());
     }
     return statements;
+}
+
+StmtPtr Parser::declaration(){
+    try{
+        if(match(TokenType::VAR)) return varDecl();
+        return statement();
+    }
+    catch(ParseError err){
+        synchronise();
+        return nullptr;
+    }
 }
 
 StmtPtr Parser::statement(){
     if(match(TokenType::PRINT)) return printStatement();
     return exprStatement();
+}
+
+DeclStmtPtr Parser::varDecl(){
+    Token name = consume(TokenType::IDENTIFIER, "Expected identifier after 'var'.");
+
+    // initialiser is nullptr if the variable is only declared without initialisation.
+    ExprPtr init = std::make_unique<Literal>(nullptr);
+    if(match(TokenType::EQUAL)){
+        init = expression();
+    }
+    consume(TokenType::SEMICOLON, "Expected ';' after variable declaration.");
+    return std::make_unique<DeclStmt>(std::move(name), std::move(init));
 }
 
 PrintStmtPtr Parser::printStatement(){

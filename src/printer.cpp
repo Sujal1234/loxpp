@@ -32,3 +32,7 @@ void ASTPrinter::visitUnary(const Unary* expr) {
     expr->m_right->accept(printer);
     std::cout << ')';
 }
+
+void ASTPrinter::visitVariable(const Variable* expr){
+    std::cout << expr->m_identifier.lexeme();
+}

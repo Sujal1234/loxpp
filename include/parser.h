@@ -33,7 +33,9 @@ private:
     ExprPtr factor();
     ExprPtr unary();
     ExprPtr primary();
+    StmtPtr declaration();
     StmtPtr statement();
+    DeclStmtPtr varDecl();
     PrintStmtPtr printStatement();
     ExprStmtPtr exprStatement();
     

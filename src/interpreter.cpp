@@ -108,6 +108,10 @@ void Interpreter::visitUnary(const Unary* expr){
     }
 }
 
+void Interpreter::visitVariable(const Variable* expr){
+    m_val = state.get(expr->m_identifier);
+}
+
 void Interpreter::visitExprStmt(const ExprStmt& stmt){
     getVal(*stmt.m_expr);
 }
@@ -116,6 +120,11 @@ void Interpreter::visitPrintStmt(const PrintStmt& stmt){
     auto val = getVal(*stmt.m_expr);
     printLiteral(val);
     std::cout << '\n';
+}
+
+void Interpreter::visitDeclStmt(const DeclStmt& stmt){
+    auto val = getVal(*stmt.m_init);
+    state.defineVar(stmt.m_name.lexeme(), val);
 }
 
 void Interpreter::execute(const Stmt& stmt){
