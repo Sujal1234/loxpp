@@ -11,5 +11,6 @@ private:
 public:
     void defineVar(const std::string& name, Token::Literal val);
     Token::Literal get(const Token& name);
+    void assign(const Token& name, const Token::Literal& value);
 };
 #endif // STATE_H

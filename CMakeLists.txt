@@ -28,7 +28,6 @@ if ( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Cla
 	-pedantic
 	-fPIE
 	-fstack-protector-all
-	-fno-rtti
 )
 endif()
 

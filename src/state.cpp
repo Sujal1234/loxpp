@@ -12,3 +12,13 @@ Token::Literal State::get(const Token& name){
     }
     throw LoxRuntimeError(name, "Undefined variable '" + name.lexeme() + "'.");
 }
+
+void State::assign(const Token& name, const Token::Literal& value){
+    auto it = variables.find(name.lexeme());
+    if(it != variables.end()){
+        it->second = value;
+    }
+    else{
+        throw LoxRuntimeError(name, "Undefined variable '" + name.lexeme() + "'.");
+    }
+}

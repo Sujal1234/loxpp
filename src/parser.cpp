@@ -4,7 +4,26 @@
 #include "stmt.h"
 
 ExprPtr Parser::expression() {
-    return equality();
+    return assignment();
+}
+
+ExprPtr Parser::assignment(){
+    auto expr = equality();
+
+    if(match(TokenType::EQUAL)){
+        Token equal = previous();
+
+        auto identifier = dynamic_cast<Variable*>(expr.get());
+        if(identifier){
+            // Is a valid assignment
+            ExprPtr value = assignment();
+            Token name = identifier->m_identifier;
+
+            return std::make_unique<Assignment>(std::move(name), std::move(value));
+        }
+        error(equal, "Cannot assign to this expression.");
+    }
+    return expr;
 }
 
 ExprPtr Parser::equality() {
@@ -110,7 +129,7 @@ Token Parser::consume(TokenType type, const std::string& msg) {
     throw error(peek(), msg);
 }
 
-Parser::ParseError Parser::error(Token token, const std::string& msg) {
+Parser::ParseError Parser::error(const Token& token, const std::string& msg) {
     Lox::error(token, msg);
     return ParseError{};
 }

@@ -31,6 +31,7 @@ Scanner::Scanner(std::string_view source)
 std::vector<Token> Scanner::scanTokens(){
     while(!isAtEnd()){
         //At the beginning of the next lexeme
+        m_start = m_current;
         scanToken();
     }
 
@@ -195,6 +196,7 @@ void Scanner::readIdentifier(){
     
     switch(type) {
         case TokenType::NIL:
+        case TokenType::VAR:
             addToken(type, nullptr);
             return;
         case TokenType::TRUE:

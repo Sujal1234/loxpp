@@ -112,6 +112,11 @@ void Interpreter::visitVariable(const Variable* expr){
     m_val = state.get(expr->m_identifier);
 }
 
+void Interpreter::visitAssignment(const Assignment* expr){
+    m_val = getVal(*expr->m_value);
+    state.assign(expr->m_name, m_val);
+}
+
 void Interpreter::visitExprStmt(const ExprStmt& stmt){
     getVal(*stmt.m_expr);
 }

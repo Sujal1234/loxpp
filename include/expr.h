@@ -12,6 +12,7 @@ struct Grouping;
 struct Literal;
 struct Unary;
 struct Variable;
+struct Assignment;
 
 using ExprPtr = std::unique_ptr<Expr>;
 
@@ -22,6 +23,7 @@ struct ExprVisitor{
     virtual void visitLiteral(const Literal* expr) = 0;
     virtual void visitUnary(const Unary* expr) = 0;
     virtual void visitVariable(const Variable* expr) = 0;
+    virtual void visitAssignment(const Assignment* expr) = 0;
 
     virtual ~ExprVisitor() = default;
 };
@@ -34,9 +36,9 @@ struct Expr{
 };
 
 struct Binary : public Expr{
-    ExprPtr m_left {};
-    ExprPtr m_right {};
-    Token m_op {};
+    ExprPtr m_left{};
+    ExprPtr m_right{};
+    Token m_op{};
 
     Binary(ExprPtr left, ExprPtr right, Token&& op)
     : m_left{std::move(left)}
@@ -51,7 +53,7 @@ struct Binary : public Expr{
 };
 
 struct Grouping : public Expr{
-    ExprPtr m_expr {};
+    ExprPtr m_expr{};
 
     Grouping(ExprPtr expr)
     : m_expr{std::move(expr)}
@@ -64,7 +66,7 @@ struct Grouping : public Expr{
 };
 
 struct Literal : public Expr{
-    Token::Literal m_value {};
+    Token::Literal m_value{};
 
     Literal(Token::Literal value)
     : m_value{value}
@@ -77,8 +79,8 @@ struct Literal : public Expr{
 };
 
 struct Unary : public Expr{
-    Token m_op {};
-    ExprPtr m_right {};
+    Token m_op{};
+    ExprPtr m_right{};
 
     Unary(Token&& op, ExprPtr right)
     : m_op{std::move(op)}
@@ -94,11 +96,26 @@ struct Unary : public Expr{
 struct Variable : public Expr{
     Token m_identifier{};
 
-    Variable(Token&& id) : m_identifier{std::move(id)}{};
+    Variable(Token&& id) : m_identifier{std::move(id)}{}
     ~Variable() override = default;
     
     void accept(ExprVisitor& visitor) const override{
         visitor.visitVariable(this);
+    }
+};
+
+struct Assignment : public Expr{
+    Token m_name{};
+    ExprPtr m_value{};
+
+    Assignment(Token&& name, ExprPtr value)
+    : m_name{std::move(name)}
+    , m_value{std::move(value)}{}
+
+    ~Assignment() override = default;
+    
+    void accept(ExprVisitor& visitor) const override{
+        visitor.visitAssignment(this);
     }
 };
 

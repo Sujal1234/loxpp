@@ -27,6 +27,7 @@ private:
      * Functions to match different types of expressions in the grammar
      */
     ExprPtr expression();
+    ExprPtr assignment();
     ExprPtr equality();
     ExprPtr comparison();
     ExprPtr term();
@@ -69,7 +70,7 @@ private:
      * Consumes the token if it matches otherwise throws an error
      */
     Token consume(TokenType type, const std::string& msg);
-    ParseError error(Token token, const std::string& msg);
+    ParseError error(const Token& token, const std::string& msg);
     
     void synchronise();    
 };

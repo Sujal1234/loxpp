@@ -3,11 +3,12 @@ declaration    → varDecl | statement
 
 varDecl        → "var" IDENTIFIER ("=" expression)? ";"
 
-statement      → exprStmt | printStmt
-exprStmt       → expression ";"
+statement      → printStmt | exprStmt
 printStmt      → "print" expression ";"
+exprStmt       → expression ";"
 
-expression     → equality ;
+expression     → assignment
+assignment     → IDENTIFIER "=" assignment | equality
 equality       → comparison ( ( "!=" | "==" )   comparison ) *  (Left associative)
 comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term ) *  (Left associative)
 term           → factor ( ( "-" | "+" ) factor ) *

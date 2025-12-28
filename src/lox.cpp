@@ -69,7 +69,7 @@ void error(int line, const std::string& msg){
     report(line, "", msg);
 }
 
-void error(Token token, const std::string& msg) {
+void error(const Token& token, const std::string& msg) {
     if(token.type() == TokenType::EOF_) {
         report(token.line(), "at end",  msg);
     }
@@ -79,7 +79,7 @@ void error(Token token, const std::string& msg) {
 }
 
 void runtimeError(LoxRuntimeError& error){
-    std::cerr << "Error at operand '" << error.token.lexeme() << "' : ";
+    std::cerr << "Error at '" << error.token.lexeme() << "' : ";
     std::cerr << error.msg << "\n[line " << error.token.line() << "]\n";
     hadRuntimeError = true;
 }
