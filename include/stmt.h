@@ -2,22 +2,26 @@
 #define STMT_H
 #include "expr.h"
 #include <memory>
+#include <vector>
 
 
 struct ExprStmt;
 struct PrintStmt;
 struct DeclStmt;
+struct BlockStmt;
 struct StmtVisitor;
 
 struct Stmt{
     virtual void accept(StmtVisitor& visitor) const = 0;
     virtual ~Stmt() = default;
 };
+using StmtPtr = std::unique_ptr<Stmt>;
 
 struct StmtVisitor{
     virtual void visitExprStmt(const ExprStmt& stmt) = 0;
     virtual void visitPrintStmt(const PrintStmt& stmt) = 0;
     virtual void visitDeclStmt(const DeclStmt& stmt) = 0;
+    virtual void visitBlockStmt(const BlockStmt& stmt) = 0;
 
     virtual ~StmtVisitor() = default;
 };
@@ -55,8 +59,18 @@ struct DeclStmt : public Stmt{
     ~DeclStmt() override = default;
 };
 
-using StmtPtr = std::unique_ptr<Stmt>;
+struct BlockStmt : public Stmt{
+    std::vector<StmtPtr> statements;
+
+    void accept(StmtVisitor& visitor) const override{
+        visitor.visitBlockStmt(*this);
+    }
+    ~BlockStmt() override = default;
+};
+
+
 using ExprStmtPtr = std::unique_ptr<ExprStmt>;
 using PrintStmtPtr = std::unique_ptr<PrintStmt>;
 using DeclStmtPtr = std::unique_ptr<DeclStmt>;
+using BlockStmtPtr = std::unique_ptr<BlockStmt>;
 #endif // STMT_H

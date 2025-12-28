@@ -36,6 +36,7 @@ private:
     ExprPtr primary();
     StmtPtr declaration();
     StmtPtr statement();
+    BlockStmtPtr block();
     DeclStmtPtr varDecl();
     PrintStmtPtr printStatement();
     ExprStmtPtr exprStatement();

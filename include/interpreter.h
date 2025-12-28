@@ -9,6 +9,11 @@ struct Interpreter : public ExprVisitor, public StmtVisitor {
     State state;
     Token::Literal m_val {nullptr};
 
+    Interpreter() = default;
+    Interpreter(State* state_){
+        state.parentState = state_;
+    }
+
     void visitBinary(const Binary* expr) override;
     void visitGrouping(const Grouping* expr) override;
     void visitLiteral(const Literal* expr) override;
@@ -19,6 +24,7 @@ struct Interpreter : public ExprVisitor, public StmtVisitor {
     void visitExprStmt(const ExprStmt& stmt) override;
     void visitPrintStmt(const PrintStmt& stmt) override;
     void visitDeclStmt(const DeclStmt& stmt) override;
+    void visitBlockStmt(const BlockStmt& stmt) override;
     
     Token::Literal getVal(const Expr& expr);
     void execute(const Stmt& stmt);

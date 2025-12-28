@@ -207,12 +207,22 @@ std::vector<StmtPtr> Parser::parse() {
 StmtPtr Parser::declaration(){
     try{
         if(match(TokenType::VAR)) return varDecl();
+        if(match(TokenType::LEFT_BRACE)) return block();
         return statement();
     }
     catch(ParseError err){
         synchronise();
         return nullptr;
     }
+}
+
+BlockStmtPtr Parser::block(){
+    auto stmt = std::make_unique<BlockStmt>();
+    while(peek().type() != TokenType::RIGHT_BRACE && !isAtEnd()){
+        stmt->statements.push_back(declaration());
+    }
+    consume(TokenType::RIGHT_BRACE, "Expected '}'.");
+    return stmt;
 }
 
 StmtPtr Parser::statement(){

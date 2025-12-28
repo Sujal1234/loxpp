@@ -132,6 +132,11 @@ void Interpreter::visitDeclStmt(const DeclStmt& stmt){
     state.defineVar(stmt.m_name.lexeme(), val);
 }
 
+void Interpreter::visitBlockStmt(const BlockStmt& stmt){
+    auto blockInterpreter = Interpreter(&(this->state));
+    blockInterpreter.interpret(stmt.statements);
+}
+
 void Interpreter::execute(const Stmt& stmt){
     stmt.accept(*this);
 }
