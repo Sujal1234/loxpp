@@ -20,6 +20,7 @@ struct Interpreter : public ExprVisitor, public StmtVisitor {
     void visitUnary(const Unary* expr) override;
     void visitVariable(const Variable* expr) override;
     void visitAssignment(const Assignment* expr) override;
+    void visitLogic(const Logic* expr) override;
 
     void visitExprStmt(const ExprStmt& stmt) override;
     void visitPrintStmt(const PrintStmt& stmt) override;

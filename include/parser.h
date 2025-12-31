@@ -27,6 +27,8 @@ private:
      */
     ExprPtr expression();
     ExprPtr assignment();
+    ExprPtr logic_or();
+    ExprPtr logic_and();
     ExprPtr equality();
     ExprPtr comparison();
     ExprPtr term();

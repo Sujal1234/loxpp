@@ -117,6 +117,23 @@ void Interpreter::visitAssignment(const Assignment* expr){
     state.assign(expr->m_name, m_val);
 }
 
+void Interpreter::visitLogic(const Logic* expr){
+    auto left = getVal(*expr->m_left);
+    if(expr->m_op.type() == TokenType::OR){
+        if(Token::isTruthy(left)){
+            m_val = left;
+            return;
+        }
+    }
+    else{
+        if(!Token::isTruthy(left)){
+            m_val = left;
+            return;
+        }
+    }
+    m_val = getVal(*expr->m_right);
+}
+
 void Interpreter::visitExprStmt(const ExprStmt& stmt){
     getVal(*stmt.m_expr);
 }

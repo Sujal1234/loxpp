@@ -8,7 +8,7 @@ ExprPtr Parser::expression() {
 }
 
 ExprPtr Parser::assignment(){
-    auto expr = equality();
+    auto expr = logic_or();
 
     if(match(TokenType::EQUAL)){
         Token equal = previous();
@@ -22,6 +22,26 @@ ExprPtr Parser::assignment(){
             return std::make_unique<Assignment>(std::move(name), std::move(value));
         }
         error(equal, "Cannot assign to this expression.");
+    }
+    return expr;
+}
+
+ExprPtr Parser::logic_or(){
+    auto expr = logic_and();
+    
+    while(match(TokenType::OR)){
+        Token op = previous();
+        expr = std::make_unique<Logic>(std::move(op), std::move(expr), logic_and());
+    }
+    return expr;
+}
+
+ExprPtr Parser::logic_and(){
+    auto expr = equality();
+
+    while(match(TokenType::AND)){
+        Token op = previous();
+        expr = std::make_unique<Logic>(std::move(op), std::move(expr), equality());
     }
     return expr;
 }

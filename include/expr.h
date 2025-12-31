@@ -13,6 +13,7 @@ struct Literal;
 struct Unary;
 struct Variable;
 struct Assignment;
+struct Logic;
 
 using ExprPtr = std::unique_ptr<Expr>;
 
@@ -24,6 +25,7 @@ struct ExprVisitor{
     virtual void visitUnary(const Unary* expr) = 0;
     virtual void visitVariable(const Variable* expr) = 0;
     virtual void visitAssignment(const Assignment* expr) = 0;
+    virtual void visitLogic(const Logic* expr) = 0;
 
     virtual ~ExprVisitor() = default;
 };
@@ -40,7 +42,7 @@ struct Binary : public Expr{
     ExprPtr m_right{};
     Token m_op{};
 
-    Binary(ExprPtr left, ExprPtr right, Token&& op)
+    Binary(ExprPtr left, ExprPtr right, Token op)
     : m_left{std::move(left)}
     , m_right{std::move(right)}
     , m_op{std::move(op)}
@@ -82,7 +84,7 @@ struct Unary : public Expr{
     Token m_op{};
     ExprPtr m_right{};
 
-    Unary(Token&& op, ExprPtr right)
+    Unary(Token op, ExprPtr right)
     : m_op{std::move(op)}
     , m_right{std::move(right)}
     {}
@@ -96,7 +98,7 @@ struct Unary : public Expr{
 struct Variable : public Expr{
     Token m_identifier{};
 
-    Variable(Token&& id) : m_identifier{std::move(id)}{}
+    Variable(Token id) : m_identifier{std::move(id)}{}
     ~Variable() override = default;
     
     void accept(ExprVisitor& visitor) const override{
@@ -108,7 +110,7 @@ struct Assignment : public Expr{
     Token m_name{};
     ExprPtr m_value{};
 
-    Assignment(Token&& name, ExprPtr value)
+    Assignment(Token name, ExprPtr value)
     : m_name{std::move(name)}
     , m_value{std::move(value)}{}
 
@@ -116,6 +118,24 @@ struct Assignment : public Expr{
     
     void accept(ExprVisitor& visitor) const override{
         visitor.visitAssignment(this);
+    }
+};
+
+struct Logic : public Expr{
+    Token m_op;
+    ExprPtr m_left;
+    ExprPtr m_right;
+
+    Logic(Token op, ExprPtr left, ExprPtr right)
+    : m_op{std::move(op)}
+    , m_left{std::move(left)}
+    , m_right{std::move(right)}
+    {}
+
+    ~Logic() override = default;
+    
+    void accept(ExprVisitor& visitor) const override{
+        visitor.visitLogic(this);
     }
 };
 
