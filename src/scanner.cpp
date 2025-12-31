@@ -156,6 +156,7 @@ void Scanner::readString(){
 
     if(isAtEnd()){
         Lox::error(m_line, "Unterminated string.");
+        return;
     }
     //Consume quotation mark - "
     advance();

@@ -17,11 +17,16 @@ static void run(const std::string& source){
     Scanner scanner{source};
     std::vector<Token> tokens = scanner.scanTokens();
 
+    if(hadError){
+        std::cerr << "Scanner encountered an error.\n";
+        return;
+    }
+
     Parser parser{tokens};
     auto statements = parser.parse();
 
     if(hadError){
-        std::cerr << "Parser encountered an error\n";
+        std::cerr << "Parser encountered an error.\n";
         return;
     }
 
