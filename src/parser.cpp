@@ -239,6 +239,8 @@ StmtPtr Parser::statement(){
     if(match(TokenType::PRINT)) return printStatement();
     if(match(TokenType::LEFT_BRACE)) return block();
     if(match(TokenType::IF)) return ifStatement();
+    if(match(TokenType::WHILE)) return whileStatement();
+    if(match(TokenType::FOR)) return forStatement();
     return exprStatement();
 }
 
@@ -262,6 +264,62 @@ IfStmtPtr Parser::ifStatement(){
         elseBranch = statement();
     }
     return std::make_unique<IfStmt>(std::move(expr), std::move(ifBranch), std::move(elseBranch));
+}
+
+WhileStmtPtr Parser::whileStatement(){
+    consume(TokenType::LEFT_PAREN, "Expected '(' after \"while\".");
+    auto condition = expression();
+    consume(TokenType::RIGHT_PAREN, "Expected ')' after expression for \"while\" statement");
+
+    return std::make_unique<WhileStmt>(std::move(condition), statement());
+}
+
+BlockStmtPtr Parser::forStatement(){
+    consume(TokenType::LEFT_PAREN, "Expected '(' after \"for\".");
+    StmtPtr initialiser;
+    if(match(TokenType::SEMICOLON)){/*initialiser is nullptr*/}
+    else if(match(TokenType::VAR)){
+        initialiser = varDecl();
+    }
+    else{
+        initialiser = exprStatement();
+    }
+
+    ExprPtr condition = std::make_unique<Literal>(true); // If no loop condition given then it's always true
+    if(!check(TokenType::SEMICOLON)){
+        condition = expression();
+    }
+    consume(TokenType::SEMICOLON, "Expected ';' after loop condition");
+
+    ExprPtr increment;
+    if(!check(TokenType::RIGHT_PAREN)){
+        increment = expression();
+    }
+    consume(TokenType::RIGHT_PAREN, "Expected ')' to end \"for\" statement.");
+    
+    auto block = std::make_unique<BlockStmt>();
+    /*
+    {
+        initialiser
+        while(condition){
+            body
+            increment
+        }
+    }
+    */
+    if(initialiser){
+        block->statements.push_back(std::move(initialiser));
+    }
+    auto whileBlock = std::make_unique<BlockStmt>();
+    whileBlock->statements.push_back(statement());
+    if(increment){
+        whileBlock->statements.push_back(std::make_unique<ExprStmt>(std::move(increment)));
+    }
+
+    auto whileStatement = std::make_unique<WhileStmt>(std::move(condition), std::move(whileBlock));
+
+    block->statements.push_back(std::move(whileStatement));
+    return block;
 }
 
 DeclStmtPtr Parser::varDecl(){

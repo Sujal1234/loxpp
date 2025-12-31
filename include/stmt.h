@@ -10,6 +10,7 @@ struct PrintStmt;
 struct DeclStmt;
 struct BlockStmt;
 struct IfStmt;
+struct WhileStmt;
 struct StmtVisitor;
 
 struct Stmt{
@@ -24,6 +25,7 @@ struct StmtVisitor{
     virtual void visitDeclStmt(const DeclStmt& stmt) = 0;
     virtual void visitBlockStmt(const BlockStmt& stmt) = 0;
     virtual void visitIfStmt(const IfStmt& stmt) = 0;
+    virtual void visitWhileStmt(const WhileStmt& stmt) = 0;
 
     virtual ~StmtVisitor() = default;
 };
@@ -87,9 +89,25 @@ struct IfStmt : public Stmt{
     ~IfStmt() override = default;
 };
 
+struct WhileStmt : public Stmt{
+    ExprPtr condition;
+    StmtPtr statement;
+
+    WhileStmt(ExprPtr cond, StmtPtr stmt)
+    : condition{std::move(cond)}
+    , statement(std::move(stmt))
+    {}
+
+    void accept(StmtVisitor& visitor) const override{
+        visitor.visitWhileStmt(*this);
+    }
+    ~WhileStmt() override = default;
+};
+
 using ExprStmtPtr = std::unique_ptr<ExprStmt>;
 using PrintStmtPtr = std::unique_ptr<PrintStmt>;
 using DeclStmtPtr = std::unique_ptr<DeclStmt>;
 using BlockStmtPtr = std::unique_ptr<BlockStmt>;
 using IfStmtPtr = std::unique_ptr<IfStmt>;
+using WhileStmtPtr = std::unique_ptr<WhileStmt>;
 #endif // STMT_H

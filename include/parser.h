@@ -42,6 +42,8 @@ private:
     PrintStmtPtr printStatement();
     ExprStmtPtr exprStatement();
     IfStmtPtr ifStatement();
+    WhileStmtPtr whileStatement();
+    BlockStmtPtr forStatement();
     
     /**
      * Returns true if at least one of the types matches.

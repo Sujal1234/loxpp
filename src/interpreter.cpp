@@ -164,6 +164,12 @@ void Interpreter::visitIfStmt(const IfStmt& stmt){
     }
 }
 
+void Interpreter::visitWhileStmt(const WhileStmt& stmt){
+    while(Token::isTruthy(getVal(*stmt.condition))){
+        execute(*stmt.statement);
+    }
+}
+
 void Interpreter::execute(const Stmt& stmt){
     stmt.accept(*this);
 }
