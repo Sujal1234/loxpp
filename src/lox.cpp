@@ -22,7 +22,7 @@ static void run(const std::string& source){
         return;
     }
 
-    Parser parser{tokens};
+    Parser parser{std::move(tokens)};
     auto statements = parser.parse();
 
     if(hadError){

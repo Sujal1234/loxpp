@@ -13,9 +13,8 @@ private:
     int current = 0;
 
 public:
-    Parser(std::vector<Token> tokens)
-    : m_tokens {tokens}
-    {}
+    Parser(std::vector<Token>& tokens): m_tokens {tokens}{}
+    Parser(std::vector<Token>&& tokens): m_tokens {tokens}{}
 
     std::vector<StmtPtr> parse();
 
