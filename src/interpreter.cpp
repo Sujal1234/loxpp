@@ -137,6 +137,16 @@ void Interpreter::visitBlockStmt(const BlockStmt& stmt){
     blockInterpreter.interpret(stmt.statements);
 }
 
+void Interpreter::visitIfStmt(const IfStmt& stmt){
+    auto val = getVal(*stmt.condition);
+    if(Token::isTruthy(val)){
+        execute(*stmt.ifBranch);
+    }
+    else{
+        execute(*stmt.elseBranch);
+    }
+}
+
 void Interpreter::execute(const Stmt& stmt){
     stmt.accept(*this);
 }

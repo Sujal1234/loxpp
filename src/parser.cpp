@@ -207,7 +207,6 @@ std::vector<StmtPtr> Parser::parse() {
 StmtPtr Parser::declaration(){
     try{
         if(match(TokenType::VAR)) return varDecl();
-        if(match(TokenType::LEFT_BRACE)) return block();
         return statement();
     }
     catch(ParseError err){
@@ -216,18 +215,33 @@ StmtPtr Parser::declaration(){
     }
 }
 
+StmtPtr Parser::statement(){
+    if(match(TokenType::PRINT)) return printStatement();
+    if(match(TokenType::LEFT_BRACE)) return block();
+    if(match(TokenType::IF)) return ifStatement();
+    return exprStatement();
+}
+
 BlockStmtPtr Parser::block(){
     auto stmt = std::make_unique<BlockStmt>();
-    while(peek().type() != TokenType::RIGHT_BRACE && !isAtEnd()){
+    while(!check(TokenType::RIGHT_BRACE) && !isAtEnd()){
         stmt->statements.push_back(declaration());
     }
     consume(TokenType::RIGHT_BRACE, "Expected '}'.");
     return stmt;
 }
 
-StmtPtr Parser::statement(){
-    if(match(TokenType::PRINT)) return printStatement();
-    return exprStatement();
+IfStmtPtr Parser::ifStatement(){
+    consume(TokenType::LEFT_PAREN, "Expected '(' after \"if\".");
+    auto expr = expression();
+    consume(TokenType::RIGHT_PAREN, "Expected ')' after expression for \"if\" statement.");
+    auto ifBranch = statement();
+
+    StmtPtr elseBranch;
+    if(match(TokenType::ELSE)){
+        elseBranch = statement();
+    }
+    return std::make_unique<IfStmt>(std::move(expr), std::move(ifBranch), std::move(elseBranch));
 }
 
 DeclStmtPtr Parser::varDecl(){

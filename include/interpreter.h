@@ -25,6 +25,7 @@ struct Interpreter : public ExprVisitor, public StmtVisitor {
     void visitPrintStmt(const PrintStmt& stmt) override;
     void visitDeclStmt(const DeclStmt& stmt) override;
     void visitBlockStmt(const BlockStmt& stmt) override;
+    void visitIfStmt(const IfStmt& stmt) override;
     
     Token::Literal getVal(const Expr& expr);
     void execute(const Stmt& stmt);

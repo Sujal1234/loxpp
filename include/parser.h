@@ -40,6 +40,7 @@ private:
     DeclStmtPtr varDecl();
     PrintStmtPtr printStatement();
     ExprStmtPtr exprStatement();
+    IfStmtPtr ifStatement();
     
     /**
      * Returns true if at least one of the types matches.

@@ -9,6 +9,7 @@ struct ExprStmt;
 struct PrintStmt;
 struct DeclStmt;
 struct BlockStmt;
+struct IfStmt;
 struct StmtVisitor;
 
 struct Stmt{
@@ -22,6 +23,7 @@ struct StmtVisitor{
     virtual void visitPrintStmt(const PrintStmt& stmt) = 0;
     virtual void visitDeclStmt(const DeclStmt& stmt) = 0;
     virtual void visitBlockStmt(const BlockStmt& stmt) = 0;
+    virtual void visitIfStmt(const IfStmt& stmt) = 0;
 
     virtual ~StmtVisitor() = default;
 };
@@ -68,9 +70,26 @@ struct BlockStmt : public Stmt{
     ~BlockStmt() override = default;
 };
 
+struct IfStmt : public Stmt{
+    ExprPtr condition;
+    StmtPtr ifBranch;
+    StmtPtr elseBranch;
+
+    IfStmt(ExprPtr cond, StmtPtr ifBr, StmtPtr elseBr)
+    : condition{std::move(cond)}
+    , ifBranch{std::move(ifBr)}
+    , elseBranch{std::move(elseBr)}
+    {}
+
+    void accept(StmtVisitor& visitor) const override{
+        visitor.visitIfStmt(*this);
+    }
+    ~IfStmt() override = default;
+};
 
 using ExprStmtPtr = std::unique_ptr<ExprStmt>;
 using PrintStmtPtr = std::unique_ptr<PrintStmt>;
 using DeclStmtPtr = std::unique_ptr<DeclStmt>;
 using BlockStmtPtr = std::unique_ptr<BlockStmt>;
+using IfStmtPtr = std::unique_ptr<IfStmt>;
 #endif // STMT_H

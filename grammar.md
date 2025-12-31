@@ -1,12 +1,13 @@
 program        → declaration* EOF
-declaration    → varDecl | block | statement
+declaration    → varDecl | statement
 
 varDecl        → "var" IDENTIFIER ("=" expression)? ";"
 block -> "{" declaration* "}"
 
-statement      → printStmt | exprStmt
+statement      → printStmt | ifStmt | exprStmt | block
 printStmt      → "print" expression ";"
 exprStmt       → expression ";"
+ifStmt         → "if" "(" expression ")" statement ("else" statement)?
 
 expression     → assignment
 assignment     → IDENTIFIER "=" assignment | equality

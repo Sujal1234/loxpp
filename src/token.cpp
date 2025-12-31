@@ -82,12 +82,13 @@ int Token::line() const {
 }
 
 bool Token::isTruthy(const Literal& literal){
+    if(std::holds_alternative<std::nullptr_t>(literal)){
+        return false;
+    }
     if(std::holds_alternative<bool>(literal)){
         return std::get<bool>(literal);
     }
-    else{
-        return true;
-    }
+    return true;
 }
 
 void printLiteral(const Token::Literal& val){
